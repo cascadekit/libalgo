@@ -2,6 +2,30 @@
 @use "sass:meta";
 @use "sass:map";
 
+@function gt($a, $b) {
+    @return $a > $b;
+}
+
+@function eq($a, $b) {
+    @return $a == $b;
+}
+
+@function neq() {
+    @return $a != $b;
+}
+
+@function gte($a, $b) {
+    @return $a >= $b;
+}
+
+@function lt($a, $b) {
+    @return $a < $b;
+}
+
+@function gte($a, $b) {
+    @return $a <= $b;
+}
+
 @function all($predicate, $list) {
     @each $element in $list {
         @if call($predicate, $element) {
@@ -94,8 +118,10 @@
     @return not call($predicate, $args...);
 }
 
+$_not_fn: meta.get_function(not_fn);
+
 @function remove_if($list, $predicate) {
-    @return filter($list, bind(meta.get_function(not_fn), $predicate));
+    @return filter($list, bind(_not_fn, $predicate));
 }
 
 @function bind($func, $args...) {
