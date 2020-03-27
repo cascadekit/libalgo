@@ -1,0 +1,28 @@
+@use "../lib/functional" as func;
+@use "sass:meta";
+@use "test";
+@debug meta.module-functions('test');
+
+$_numslist: (1, 2, 3, 4);
+$_charslist: ("a", "b", "c", "d"); 
+
+@function is_one($elem) {
+    @if $elem == 1 {
+        @return true;
+    }
+    @return false;
+}
+
+$_is_one: meta.get_function("is_one");
+
+@function test_1() {
+    $res_1: func.all($_numslist, $_is_one);
+    @return test.assert_false($res_1);
+}
+
+@function runner() {
+    $_: test_1();
+    @return "success!";
+}
+
+@debug runner();

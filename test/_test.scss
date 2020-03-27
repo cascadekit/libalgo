@@ -1,0 +1,15 @@
+@use 'sass:meta';
+@function assert_false($variable) {
+    @if $variable {
+        @error $variable;
+    }
+    @return false;
+}
+
+// sass reports errors one level up the stack, would use !assert_false but adds to the stack
+@function assert_true($variable) {
+    @if not $variable {
+        @error $variable;
+    }
+    @return true;
+}
