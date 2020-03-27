@@ -1,7 +1,7 @@
 @use "../lib/functional" as func;
 @use "sass:meta";
+@use "sass:list";
 @use "test";
-@debug meta.module-functions('test');
 
 $_numslist: (1, 2, 3, 4);
 $_charslist: ("a", "b", "c", "d"); 
@@ -13,15 +13,31 @@ $_charslist: ("a", "b", "c", "d");
     @return false;
 }
 
+@function add_one($val) {
+    @return $val + 1;
+}
+
+$_add_one: meta.get_function("add_one");
 $_is_one: meta.get_function("is_one");
 
 @function test_1() {
-    $res_1: func.all($_numslist, $_is_one);
+    $res_1: func.all($_is_one, $_numslist);
     @return test.assert_false($res_1);
+}
+
+@function test_2() {
+    $res_1: func.map($_add_one, $_numslist);
+    @for $i from 1 through func.length($res_1) {
+        $_: test.assert_eq(
+            add_one(list.nth($_numslist, $i)), list.nth($res_1, $i));
+    }
+
+    @return true;
 }
 
 @function runner() {
     $_: test_1();
+    $_2: test_2();
     @return "success!";
 }
 

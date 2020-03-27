@@ -1,8 +1,9 @@
+@use "sass:list";
 @use "sass:meta";
 
-@function all($list, $predicate) {
+@function all($predicate, $list) {
     @each $element in $list {
-        @if $predicate($element) {
+        @if meta.call($predicate, $element) {
             @return false;
         }
     }
@@ -10,12 +11,46 @@
     @return true;
 }
 
-@function any($list, $predicate) {
+@function any($predicate, $list) {
     @each $element in $list {
-        @if $predicate($element) {
+        @if meta.call($predicate, $element) {
             @return true;
         }
     }
 
     @return false;
+}
+
+@function map($func, $list) {
+    $_lout: ();
+    $separator: list.separator($list);
+
+    @if list.is_bracketed($list) {
+        $_lout: ([]);
+    }
+
+    @each $element in $list {
+        $_lout: list.append($_lout, meta.call($func, $element), $separator);
+    }
+
+    @return $_lout;
+}
+
+@function _list_length($list) {
+    $_count: 0;
+    @each $element in $list {
+        $_count: $_count + 1;
+    }
+    @return $_count;
+}
+
+@function length($var) {
+    $type: meta.type_of($var);
+    @if $type  == "list" {
+        @return _list_length($var);
+    } @else {
+        @error "length is unimplemented for type: #{$type}";
+    }
+
+    @return 0;
 }
