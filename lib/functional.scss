@@ -1,9 +1,10 @@
 @use "sass:list";
 @use "sass:meta";
+@use "sass:map";
 
 @function all($predicate, $list) {
     @each $element in $list {
-        @if meta.call($predicate, $element) {
+        @if call($predicate, $element) {
             @return false;
         }
     }
@@ -13,7 +14,7 @@
 
 @function any($predicate, $list) {
     @each $element in $list {
-        @if meta.call($predicate, $element) {
+        @if call($predicate, $element) {
             @return true;
         }
     }
@@ -46,7 +47,7 @@
     $separator: last($new);
 
     @each $element in $list {
-        $_lout: list.append($_lout, meta.call($func, $element), $separator);
+        $_lout: list.append($_lout, call($func, $element), $separator);
     }
 
     @return $_lout;
@@ -75,14 +76,49 @@
     @return $_lout;
 }
 
-@function bind($func, $var) {
-    @if meta.type_of($func) == "list" {
-        @return list.append($func, $var);
+@function filter($list, $predicate) {
+    $new: new_from($list);
+    $_lout: first($new);
+    $separator: last($new);
+
+    @each $element in $list {
+        @if call($predicate, $element) {
+            $_lout: list.append($_lout, $element, $separator);
+        }
     }
-    @return ($func, $var);
+
+    @return $_lout;
+}
+
+@function not_fn($predicate, $args...) {
+    @return not call($predicate, $args...);
+}
+
+@function remove_if($list, $predicate) {
+    @return filter($list, bind(meta.get_function(not_fn), $predicate));
+}
+
+@function bind($func, $args...) {
+    @if meta.type_of($func) == "map" {
+        @return (
+            func: map.get($func, "func"),
+            args: list.join(map.get($func, "args"), $args)
+        );
+    }
+    @return (
+        func: $func,
+        args: $args
+    );
 }
 
 // alternative to meta.call(func.bind($f, $i)...);
-@function call($args) {
-    @return meta.call($args...);
+@function call($args...) {
+    $first: first($args);
+    $rest: remove($args, $first);
+    @if meta.type_of($first) == "map" {
+        @return meta.call(map.get($first, "func"), 
+            list.join(map.get($first, "args"), $rest)...);
+    }
+
+    @return meta.call($first, $rest...);
 }

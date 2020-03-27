@@ -37,13 +37,22 @@ $_is_one: meta.get_function("is_one");
 
 @function test_3() {
     $_f: func.bind($_is_one, 1);
-    @return assert_true(func.call($_f));
+    $_test1: assert_true(func.call($_f));
+    
+    $_f2: func.bind($_is_one, 2);
+    @return assert_false(func.call($_f2));
+}
+
+@function test_4() {
+    $val: func.remove_if($_numslist, $_is_one);
+    @return assert_neq(func.first($val), 1);
 }
 
 @function runner() {
     $_: test_1();
     $_2: test_2();
     $_3: test_3();
+    $_4: test_4();
     @return "success!";
 }
 
