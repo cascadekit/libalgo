@@ -45,7 +45,8 @@ $_is_one: meta.get_function("is_one");
 
 @function test_4() {
     $val: func.remove_if($_numslist, $_is_one);
-    @return assert_neq(func.first($val), 1);
+    $assert_1: assert_neq(func.first($val), 1);
+    @return assert_eq(func.tail($_numslist), $val);
 }
 
 @function runner() {
