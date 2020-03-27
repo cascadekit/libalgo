@@ -27,7 +27,7 @@ $_is_one: meta.get_function("is_one");
 
 @function test_2() {
     $res_1: func.map($_add_one, $_numslist);
-    @for $i from 1 through func.length($res_1) {
+    @for $i from 1 through list.length($res_1) {
         $_: test.assert_eq(
             add_one(list.nth($_numslist, $i)), list.nth($res_1, $i));
     }
@@ -35,9 +35,15 @@ $_is_one: meta.get_function("is_one");
     @return true;
 }
 
+@function test_3() {
+    $_f: func.bind($_is_one, 1);
+    @return assert_true(func.call($_f));
+}
+
 @function runner() {
     $_: test_1();
     $_2: test_2();
+    $_3: test_3();
     @return "success!";
 }
 

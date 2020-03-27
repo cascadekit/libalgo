@@ -21,13 +21,29 @@
     @return false;
 }
 
-@function map($func, $list) {
+@function first($list) {
+    @return list.nth($list, 1);
+}
+
+@function last($list) {
+    @return list.nth($list, -1);
+}
+
+@function new_from($list) {
     $_lout: ();
     $separator: list.separator($list);
 
     @if list.is_bracketed($list) {
-        $_lout: ([]);
+        $_lout: [];
     }
+
+    @return ($_lout, $separator);
+}
+
+@function map($func, $list) {
+    $new: new_from($list);
+    $_lout: first($new);
+    $separator: last($new);
 
     @each $element in $list {
         $_lout: list.append($_lout, meta.call($func, $element), $separator);
@@ -36,21 +52,37 @@
     @return $_lout;
 }
 
-@function _list_length($list) {
-    $_count: 0;
-    @each $element in $list {
-        $_count: $_count + 1;
+@function remove($list, $element) {
+    $new: new_from($list);
+    $_lout: first($new);
+    $separator: last($new);
+
+    $index: list.index($list, $element);
+    $length: list.length($list);
+
+    @for $i from 1 to $index {
+        $_lout: list.append($_lout, list.nth($list, $i), $separator);
     }
-    @return $_count;
+
+    @if $index == $length {
+        @return $_lout;
+    }
+
+    @for $i from $index + 1 through $length {
+        $_lout: list.append($_lout, list.nth($list, $i), $separator);
+    }
+
+    @return $_lout;
 }
 
-@function length($var) {
-    $type: meta.type_of($var);
-    @if $type  == "list" {
-        @return _list_length($var);
-    } @else {
-        @error "length is unimplemented for type: #{$type}";
+@function bind($func, $var) {
+    @if meta.type_of($func) == "list" {
+        @return list.append($func, $var);
     }
+    @return ($func, $var);
+}
 
-    @return 0;
+// alternative to meta.call(func.bind($f, $i)...);
+@function call($args) {
+    @return meta.call($args...);
 }
