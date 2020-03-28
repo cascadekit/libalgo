@@ -16,3 +16,9 @@
 @function pop($stack) {
     @return tail($stack);
 }
+
+// Graphs
+
+@function new_graph() {
+    @return ();
+}

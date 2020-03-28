@@ -22,7 +22,7 @@
 }
 
 @function assert_neq($a, $b) {
-    @if not $a != $b {
+    @if not ($a != $b) {
         @error "#{$a} == #{$b}";
     }
     @return true;

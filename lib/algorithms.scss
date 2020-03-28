@@ -1,0 +1,55 @@
+@use "sass:map";
+@use "list" as *;
+@use "sass:list";
+@use "functional" as func;
+@use "sass:meta";
+@use "sass:math";
+
+@function _find_min_reduce($distance_map, $accumulator, $element) {
+    @if map.get($distance_map, $element) < map.get($distance_map, $accumulator) {
+        @return $element;
+    }
+
+    @return $accumulator;
+}
+
+$_find_min_reduce: meta.get_function(_find_min_reduce);
+
+@function _find_min($distance_map, $nodes) {
+    @return func.reduce(func.bind($_find_min_reduce, $distance_map), first($nodes), $nodes);
+}
+
+@function _find_unvisited_impl($unvisited, $element) {
+    @return not not list.index($unvisited, first($element));
+}
+
+$_find_unvisited_impl: meta.get_function(_find_unvisited_impl);
+
+@function _find_unvisited($unvisited, $list) {
+    @return func.filter(func.bind($_find_unvisited_impl, $unvisited), $list);
+}
+
+@function djikstra($graph, $start) {
+    $unvisited: map.keys($graph);
+    $distance: ();
+
+    @each $node in $unvisited {
+        $distance: map.merge($distance, ($node: 100000000000));
+    }
+
+    $distance: map.merge($distance, ($start: 0));
+
+    @while list.length($unvisited) > 0 {
+        $current: _find_min($distance, $unvisited);
+        $unvisited: func.remove($unvisited, $current);
+        $neighbors: map.get($graph, $current);
+
+        $d_current: map.get($distance, $current);
+        @each $neighbor, $_d in _find_unvisited($unvisited, $neighbors) {
+            $d: map.get($distance, $neighbor);
+            $distance: map.merge($distance, ($neighbor: math.min($d, $_d + $d_current)))
+        }
+    }
+
+    @return $distance;
+}

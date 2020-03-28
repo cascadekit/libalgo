@@ -70,6 +70,25 @@
     @return $_lout;
 }
 
+@function reduce($func, $initial, $list) {
+    $accumulator: $initial;
+
+    @each $element in $list {
+        $accumulator: call($func, $accumulator, $element);
+    }
+
+    @return $accumulator;
+}
+
+// TODO make better implementation
+@function sort($list, $comparator) {
+    $_: new_from($list);
+    $_lout: first($_);
+    $separator: last($_);
+
+    @return $_lout;
+}
+
 @function remove($list, $element) {
     $new: new_from($list);
     $_lout: first($new);
@@ -93,7 +112,7 @@
     @return $_lout;
 }
 
-@function filter($list, $predicate) {
+@function filter($predicate, $list) {
     $new: new_from($list);
     $_lout: first($new);
     $separator: last($new);
@@ -113,8 +132,8 @@
 
 $_not_fn: meta.get_function(not_fn);
 
-@function remove_if($list, $predicate) {
-    @return filter($list, bind($_not_fn, $predicate));
+@function remove_if($predicate, $list) {
+    @return filter(bind($_not_fn, $predicate), $list);
 }
 
 @function bind($func, $args...) {

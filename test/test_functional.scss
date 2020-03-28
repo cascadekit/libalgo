@@ -1,4 +1,4 @@
-@use "../lib/functional" as func;
+@use "../lib";
 @use "sass:meta";
 @use "sass:list";
 @use "test";
@@ -21,12 +21,12 @@ $_add_one: meta.get_function("add_one");
 $_is_one: meta.get_function("is_one");
 
 @function test_1() {
-    $res_1: func.all($_is_one, $_numslist);
+    $res_1: lib.all($_is_one, $_numslist);
     @return test.assert_false($res_1);
 }
 
 @function test_2() {
-    $res_1: func.map($_add_one, $_numslist);
+    $res_1: lib.map($_add_one, $_numslist);
     @for $i from 1 through list.length($res_1) {
         $_: test.assert_eq(
             add_one(list.nth($_numslist, $i)), list.nth($res_1, $i));
@@ -36,17 +36,28 @@ $_is_one: meta.get_function("is_one");
 }
 
 @function test_3() {
-    $_f: func.bind($_is_one, 1);
-    $_test1: assert_true(func.call($_f));
+    $_f: lib.bind($_is_one, 1);
+    $_test1: test.assert_true(lib.call($_f));
     
-    $_f2: func.bind($_is_one, 2);
-    @return assert_false(func.call($_f2));
+    $_f2: lib.bind($_is_one, 2);
+    @return test.assert_false(lib.call($_f2));
 }
 
 @function test_4() {
-    $val: func.remove_if($_numslist, $_is_one);
-    $assert_1: assert_neq(func.first($val), 1);
-    @return assert_eq(func.tail($_numslist), $val);
+    $val: lib.remove_if($_is_one, $_numslist);
+    $assert_1: test.assert_neq(lib.list_first($val), 1);
+    @return test.assert_eq(lib.list_tail($_numslist), $val);
+}
+
+@function test_5() {
+    $graph: (
+        a: (b: 3, c: 5),
+        b: (c: 1),
+        c: ()
+    );
+
+    $distances: lib.djikstra($graph, a); 
+    @return test.assert_eq($distances, (a:0, b: 3, c: 4));
 }
 
 @function runner() {
@@ -54,6 +65,7 @@ $_is_one: meta.get_function("is_one");
     $_2: test_2();
     $_3: test_3();
     $_4: test_4();
+    $_5: test_5();
     @return "success!";
 }
 
