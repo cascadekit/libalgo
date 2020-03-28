@@ -1,6 +1,7 @@
 @use "sass:list";
 @use "sass:meta";
 @use "sass:map";
+@use "list" as *;
 
 @function gt($a, $b) {
     @return $a > $b;
@@ -44,22 +45,6 @@
     }
 
     @return false;
-}
-
-@function first($list) {
-    @return list.nth($list, 1);
-}
-
-@function _tail($first, $rest...) {
-    @return $rest;
-}
-
-@function tail($list) {
-    @return _tail($list...);
-}
-
-@function last($list) {
-    @return list.nth($list, -1);
 }
 
 @function new_from($list) {

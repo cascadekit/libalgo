@@ -1,0 +1,18 @@
+@use "list.scss" as *;
+@use "sass:list";
+
+@function dequeue($queue) {
+    @return tail($queue);
+}
+
+@function enqueue($queue, $element) {
+    @return list.append($queue, $element);
+}
+
+@function push($stack, $element) {
+    @return list.join($element, $stack, list.separator($stack), list.is_bracketed($stack));
+}
+
+@function pop($stack) {
+    @return tail($stack);
+}
