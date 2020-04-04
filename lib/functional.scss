@@ -140,6 +140,10 @@ $_not_fn: meta.get_function(not_fn);
     @return list.join($func, $args);
 }
 
+@function is_bound_function($func) {
+    @return meta.type_of($func) == "list" and meta.type_of(first($func)) == "function";
+}
+
 // alternative to meta.call(func.bind($f, $i)...);
 @function call($func, $args...) {
     @if meta.type_of($func) == "list" {
