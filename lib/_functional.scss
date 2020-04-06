@@ -11,7 +11,7 @@
     @return $a == $b;
 }
 
-@function neq() {
+@function neq($a, $b) {
     @return $a != $b;
 }
 
@@ -141,7 +141,23 @@ $_not_fn: meta.get_function(not_fn);
 }
 
 @function is_bound_function($func) {
-    @return meta.type_of($func) == "list" and meta.type_of(first($func)) == "function";
+    @return is_list($func) and is_function(first($func));
+}
+
+@function is_map($thing) {
+    @return meta.type_of($thing) == "map";
+}
+
+@function is_list($thing) {
+    @return meta.type_of($thing) == "list";
+}
+
+@function is_function($thing) {
+    @return meta.type_of($thing) == "function";
+}
+
+@function is_zero($thing) {
+    @return $thing == 0;
 }
 
 // alternative to meta.call(func.bind($f, $i)...);
