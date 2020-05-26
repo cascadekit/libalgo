@@ -1,7 +1,6 @@
 @use "sass:list";
 @use "sass:meta";
 @use "sass:map";
-@use "list" as *;
 
 @function gt($a, $b) {
     @return $a > $b;
@@ -25,6 +24,47 @@
 
 @function gte($a, $b) {
     @return $a <= $b;
+}
+
+@function multiply($a, $b) {
+    @return $a * $b;
+}
+
+@function add($a, $b) {
+    @return $a + $b;
+}
+
+@function first($list) {
+    @return list.nth($list, 1);
+}
+
+@function _tail($first, $rest...) {
+    @return $rest;
+}
+
+@function tail($list) {
+    @return _tail($list...);
+}
+
+@function last($list) {
+    @return list.nth($list, -1);
+}
+
+@function is_map($arg) {
+    @return meta.type_of($arg) == "map";
+}
+
+@function is_list($arg) {
+    @return meta.type_of($arg) == "list";
+}
+
+@function init_list($count, $val: 0) {
+    $new_list: ();
+    @for $i from 1 through $count {
+        $new_list: list.append($new_list, $val);
+    }
+
+    @return $new_list;
 }
 
 @function all($predicate, $list) {
@@ -68,6 +108,27 @@
     }
 
     @return $_lout;
+}
+
+@function zip($a, $b) {
+    @if not is_list($a) {
+        @error "first argument is not a list";
+    }
+
+    @if not is_list($b) {
+        @error "second argument is not a list";
+    }
+
+    @if list.length($a) != list.length($b) {
+        @error "length of list does not match";
+    }
+
+    $zipped: ();
+    @for $i from 0 to list.length($a) {
+        $zipped: list.append($zipped, (list.nth($a, $i), list.nth($b, $i)));
+    }
+
+    @return $zipped;
 }
 
 @function reduce($func, $initial, $list) {
@@ -134,6 +195,20 @@ $_not_fn: meta.get_function(not_fn);
 
 @function remove_if($predicate, $list) {
     @return filter(bind($_not_fn, $predicate), $list);
+}@function first($list) {
+    @return list.nth($list, 1);
+}
+
+@function _tail($first, $rest...) {
+    @return $rest;
+}
+
+@function tail($list) {
+    @return _tail($list...);
+}
+
+@function last($list) {
+    @return list.nth($list, -1);
 }
 
 @function bind($func, $args...) {

@@ -1,8 +1,8 @@
-@use "list.scss" as *;
+@use "functional" as func;
 @use "sass:list";
 
 @function dequeue($queue) {
-    @return tail($queue);
+    @return (func.first($queue), func.tail($queue));
 }
 
 @function enqueue($queue, $element) {
@@ -14,11 +14,5 @@
 }
 
 @function pop($stack) {
-    @return tail($stack);
-}
-
-// Graphs
-
-@function new_graph() {
-    @return ();
+    @return (func.first($stack), func.tail($stack));
 }
