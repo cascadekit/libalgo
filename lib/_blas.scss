@@ -1,0 +1,65 @@
+@use "sass:list";
+@use "func" as func;
+@use "sass:map";
+
+@function create_mat($rows, $cols){
+    @if $rows < 0 {
+        @error "rows is less than 0";
+    }
+    @if $cols < 0 {
+        @error "cols is less than 0";
+    }
+
+    @return (
+        rows: $rows,
+        cols: $cols,
+        data: func.init_list($rows * $cols, 0)
+    );
+}
+
+@function mat_at($mat, $row, $col) {
+    @return list.nth(map.get($mat, "data"), $row * map.get($mat, "rows") + $col);
+}
+
+@function mat_set_at($mat, $row, $col, $val) {
+    @return list.set-nth(map.get($mat, "data"), $row * map.get($mat, "rows") + $col, $val);
+}
+
+$_add: meta.get_function("add", false, func);
+$_multiply: meta.get_function("multiply", false, func);
+
+@function scalar_product($mat, $val) {
+    @return (
+        rows: map.get($mat, "rows"),
+        cols: map.get($mat, "cols"),
+        data: func.map(func.bind($_add, $val), map.get($mat, "data")),
+    );
+}
+
+@function scalar_sum($mat, $val) {
+    @return (
+        rows: map.get($mat, "rows"),
+        cols: map.get($mat, "cols"),
+        data: func.map(func.bind($_add, $val), map.get($mat, "data")),
+    );
+}
+
+@function mat_sum($a, $b) {
+    @if map.get($a, "rows") != map.get($b, "rows") {
+        @error "rows do not match";
+    }
+
+    @if map.get($a, "cols") != map.get($b, "cols") {
+        @error "cols do not match";
+    }
+
+    @return (
+        rows: map.get($a, "rows"),
+        cols: map.get($a, "cols"),
+        data: func.map($_add, func.zip(map.get($a, "data"), map.get($b, "data"))),
+    );
+}
+
+@function mat_subtract($a, $b) {
+    @return mat_sum($a, scalar_product($b, -1));
+}
